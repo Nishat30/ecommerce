@@ -24,7 +24,9 @@ await connectDB()
 await connectCloudinary()
 
 // Allow multiple origins
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['http://localhost:5173',
+  'https://your-ecommerce-app.onrender.com'
+];
 
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
@@ -32,13 +34,7 @@ app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({origin: allowedOrigins, credentials: true}));
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../client/dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
-  });
-}
 
 app.get('/', (req, res) => res.send("API is Working"));
 app.use('/api/user', userRouter)
@@ -47,6 +43,14 @@ app.use('/api/product', productRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/address', addressRouter)
 app.use('/api/order', orderRouter)
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 app.listen(port, ()=>{
     console.log(`Server is running on http://localhost:${port}`)
