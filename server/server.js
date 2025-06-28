@@ -12,14 +12,19 @@ import addressRouter from './routes/addressRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import { stripeWebhooks } from './controllers/orderController.js';
 
+import path from "path";
 const app = express();
 const port = process.env.PORT || 4000;
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';     
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 await connectDB()
 await connectCloudinary()
 
 // Allow multiple origins
-const allowedOrigins = ['http://localhost:5173', 'https://smartngkcom.vercel.app']
+const allowedOrigins = ['http://localhost:5173']
 
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
@@ -27,7 +32,13 @@ app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({origin: allowedOrigins, credentials: true}));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
 
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 app.get('/', (req, res) => res.send("API is Working"));
 app.use('/api/user', userRouter)

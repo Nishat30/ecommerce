@@ -1,6 +1,14 @@
+
 {
-  "dependencies": {
-    "cloudinary": "^2.7.0",
-    "dotenv": "^16.6.1"
-  }
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "start": "npm run start --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
